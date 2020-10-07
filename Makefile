@@ -1,3 +1,17 @@
+ecr-login:
+	aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 147047133896.dkr.ecr.us-east-1.amazonaws.com
+
+get-kong:
+	cd .. && git clone git@github.com:Kong/kong.git
+	cd .. && git clone git@github.com:Kong/docker-kong.git
+	cp -r ../docker-kong/ubuntu .
+
+build-cs-kong: ecr-login
+	cd ../kong && git fetch && git checkout 2.2.0-beta.1
+	RESTY_IMAGE_BASE=ubuntu RESTY_IMAGE_TAG=xenial PACKAGE_TYPE=deb make package-kong
+	mv output/kong-2.2.0beta.1.xenial.amd64.deb ubuntu/kong.deb
+	ASSET=community docker build --no-cache -t 147047133896.dkr.ecr.us-east-1.amazonaws.com/cs-kong ubuntu/
+
 .PHONY: test build-kong
 
 export SHELL:=/bin/bash

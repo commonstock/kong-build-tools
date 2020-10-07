@@ -1,4 +1,6 @@
+.idea
 kong
 docker-kong
 id_rsa.private
 kong_license.private
+ubuntu
